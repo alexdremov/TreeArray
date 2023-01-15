@@ -14,7 +14,7 @@ extension TreeArray: Collection, Sequence {
         let storage: ManagedBuffer<Void, TreeNode>
         
         @usableFromInline
-        var visitStack: ContiguousArray<NodeIndex>
+        var visitStack: ContiguousArray<NodeIndex> = []
         
         @inlinable
         var currentNode: NodeIndex? {
@@ -30,8 +30,8 @@ extension TreeArray: Collection, Sequence {
         @inlinable
         init(tree: TreeArray, start: NodeIndex) {
             self.storage = tree.storage
-            visitStack = [ start ]
             visitStack.reserveCapacity(Int(log2(CGFloat(tree.size + 1))) + 2)
+            visitStack.append(tree.head)
         }
         
         @inlinable

@@ -20,20 +20,13 @@ extension ManagedBuffer: Equatable where Header == Void {
 extension UnsafeMutablePointer {
     @inlinable
     subscript(i: UInt) -> Self.Pointee {
-        get {
-            self[Int(i)]
-        }
-        set {
-            self[Int(i)] = newValue
-        }
+        self[Int(i)]
     }
 }
 
 extension RandomAccessCollection where Index == Int {
     @inlinable
     subscript(i: UInt) -> Self.Element {
-        get {
-            self[Index(i)]
-        }
+        self[Index(i)]
     }
 }
