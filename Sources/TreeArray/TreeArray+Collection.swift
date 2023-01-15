@@ -14,7 +14,7 @@ extension TreeArray: Collection, Sequence {
         let storage: ManagedBuffer<Void, TreeNode>
         
         @usableFromInline
-        var visitStack: ContiguousArray<NodeIndex>
+        var visitStack: Array<NodeIndex>
         
         @inlinable
         var currentNode: NodeIndex? {

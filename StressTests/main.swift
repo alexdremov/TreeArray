@@ -41,6 +41,8 @@ extension Sequence {
 public func blackHole<T>(_ value: T) {
 }
 
-let testSize = 10000
+let testSize = 100000000
 var arr = TreeArray(Array(0...testSize))
-blackHole(arr)
+for i in arr {
+    blackHole(i)
+}
