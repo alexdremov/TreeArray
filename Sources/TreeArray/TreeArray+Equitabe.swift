@@ -8,8 +8,9 @@
 import Foundation
 
 extension TreeArray: Equatable where Element: Equatable {
+    @inlinable
     public static func == (lhs: TreeArray, rhs: TreeArray) -> Bool {
-        guard lhs.size == rhs.size else {
+        guard lhs.count == rhs.count else {
             return false
         }
         
@@ -21,6 +22,7 @@ extension TreeArray: Equatable where Element: Equatable {
         return true
     }
     
+    @inlinable
     public static func == (lhs: TreeArray, rhs: Array<Element>) -> Bool {
         guard lhs.count == rhs.count else {
             return false

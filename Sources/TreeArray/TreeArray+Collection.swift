@@ -4,65 +4,86 @@
 //
 //  Created by Alex Dremov on 11.01.2023.
 //
+import Foundation
 
 extension TreeArray: Collection, Sequence {
     public struct Iterator: IteratorProtocol {
         public typealias Element = T
         
-        private let tree: TreeArray
-        private var visitStack: [NodeIndex]
+        @usableFromInline
+        let storage: ManagedBuffer<Void, TreeNode>
         
-        var storage: UnsafeMutablePointer<TreeNode> {
-            tree.storage.pointer
-        }
+        @usableFromInline
+        var visitStack: ContiguousArray<NodeIndex>
         
+        @inlinable
         var currentNode: NodeIndex? {
             visitStack.last
         }
         
+        @inlinable
         init(tree: TreeArray) {
             self.init(tree: tree, start: tree.head)
             propagateLeft()
         }
         
+        @inlinable
         init(tree: TreeArray, start: NodeIndex) {
-            self.tree = tree
+            self.storage = tree.storage
             visitStack = [ start ]
+            visitStack.reserveCapacity(Int(log2(CGFloat(tree.size + 1))) + 2)
         }
         
-        private mutating func propagateLeft() {
+        @inlinable
+        mutating func propagateLeft() {
+            var pointer: UnsafeMutablePointer<TreeNode>!
+            storage.withUnsafeMutablePointerToElements { pointer_ in
+                pointer = pointer_
+            }
             while let last = visitStack.last,
-                  storage[last].leftExists {
-                visitStack.append(storage[last].left)
+                  pointer[Int(last)].leftExists {
+                visitStack.append(pointer[Int(last)].left)
             }
         }
         
+        @inlinable
         public mutating func next() -> Element? {
             guard let topIndex = visitStack.last else {
                 return nil
             }
-            let elemToReturn = storage[topIndex].key
+            var pointer: UnsafeMutablePointer<TreeNode>!
+            storage.withUnsafeMutablePointerToElements { pointer_ in
+                pointer = pointer_
+            }
+            let elemToReturn = pointer[topIndex].key
             advance(by: 1)
             return elemToReturn
         }
         
+        @inlinable
         mutating func advance(by: Int) {
+            var pointer: UnsafeMutablePointer<TreeNode>!
+            storage.withUnsafeMutablePointerToElements { pointer_ in
+                pointer = pointer_
+            }
             for _ in 0..<by {
                 guard let topIndex = visitStack.popLast() else {
                     return
                 }
-                if storage[topIndex].rightExists {
-                    visitStack.append(storage[topIndex].right)
+                if pointer[topIndex].rightExists {
+                    visitStack.append(pointer[topIndex].right)
                     propagateLeft()
                 }
             }
         }
     }
     
+    @inlinable
     public func makeIterator() -> Iterator {
         .init(tree: self)
     }
     
+    @inlinable
     func makeIterator(starting node: NodeIndex) -> Iterator {
         .init(tree: self, start: node)
     }
@@ -98,10 +119,10 @@ extension TreeArray: Collection, Sequence {
             return
         }
         ensureUniqelyReferenced()
-        let (left, middle) = split(node: head, no: bounds.startIndex)
-        let (leftover, right) = split(node: middle, no: bounds.count)
+        let (left, middle) = split(node: head, no: UInt(bounds.startIndex))
+        let (leftover, right) = split(node: middle, no: UInt(bounds.count))
         self.head = merge(left: left, right: right)
-        storage.deleteSubtree(root: leftover)
+        deleteSubtree(root: leftover)
     }
     
     @inlinable
@@ -118,11 +139,16 @@ extension TreeArray: Collection, Sequence {
     
     @inlinable
     mutating public func append(_ value: Element) {
-        insert(value, at: size)
+        insert(value, at: Int(size))
     }
     
     @inlinable
     mutating public func appendFront(_ value: Element) {
         insert(value, at: 0)
     }
+    
+//    @inlinable
+//    public func contains(where predicate: (Self.Element) throws -> Bool) rethrows -> Bool {
+//        
+//    }
 }

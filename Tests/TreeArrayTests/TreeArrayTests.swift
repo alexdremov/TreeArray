@@ -236,9 +236,9 @@ final class TreeArrayTests: XCTestCase {
             array[i] = newTreap[i]
         }
         
-        XCTAssertEqual(treap.storage.pointer, newTreap.storage.pointer)
+        XCTAssertEqual(treap.storage, newTreap.storage)
         treap[1] = 0
-        XCTAssertNotEqual(treap.storage.pointer, newTreap.storage.pointer)
+        XCTAssertNotEqual(treap.storage, newTreap.storage)
     }
     
     func testCopyOnWriteDeallocaton() {
@@ -356,12 +356,82 @@ final class TreeArrayTests: XCTestCase {
         var a = TreeArray<Int>()
         let testSize = 10000
         a.reserveCapacity(testSize)
-        let pointerBefore = a.storage.pointer
+        weak var pointerBefore = a.storage
         for i in 0..<testSize {
             a.append(i)
         }
-        let pointerAfter = a.storage.pointer
+        weak var pointerAfter = a.storage
         
         XCTAssertEqual(pointerBefore, pointerAfter)
+    }
+    
+    func testPalindrome() {
+        let testSize = 10000
+        var a = TreeArray<Int>((0...testSize).shuffled())
+        a += a.reversed()
+        
+        for i in 0..<(a.count / 2) {
+            XCTAssertEqual(a[i], a[a.count - i - 1])
+        }
+    }
+    
+    func testContains() {
+        let testSize = 1000
+        let a = TreeArray<Int>((1...testSize).shuffled())
+        let b = a.array.shuffled()
+        
+        for el in b {
+            XCTAssertTrue(a.contains(el))
+        }
+        
+        for el in b {
+            XCTAssertFalse(a.contains(-el), "Does not contain \(-el)")
+        }
+    }
+    
+    func testLinearBuildPowerOfTwo() {
+        var a = Array(0..<2)
+        var b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<4)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<16)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<1024)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+    }
+    
+    func testLinearBuildNotPowerOfTwo() {
+        var a = Array(0..<1)
+        var b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<5)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<11)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<15)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a = Array(0..<1025)
+        b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+    }
+    
+    func testLinearBuildBig() {
+        let a = Array(0..<1000000).shuffled()
+        let b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
     }
 }
