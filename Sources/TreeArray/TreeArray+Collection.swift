@@ -147,8 +147,25 @@ extension TreeArray: Collection, Sequence {
         insert(value, at: 0)
     }
     
-//    @inlinable
-//    public func contains(where predicate: (Self.Element) throws -> Bool) rethrows -> Bool {
-//        
-//    }
+    @inlinable
+    mutating public func reverse() {
+        guard size > 0 else {
+            return
+        }
+        ensureUniqelyReferenced()
+        reverseSubtreeKnownUniqelyReferenced(starting: head)
+    }
+    
+    @inlinable
+    mutating func reverseSubtreeKnownUniqelyReferenced(starting: NodeIndex) {
+        guard starting != 0 else {
+            return
+        }
+        let istarting = Int(starting)
+        storage.withUnsafeMutablePointerToElements { pointer in
+            swap(&pointer[istarting].left, &pointer[istarting].right)
+            reverseSubtreeKnownUniqelyReferenced(starting: pointer[istarting].left)
+            reverseSubtreeKnownUniqelyReferenced(starting: pointer[istarting].right)
+        }
+    }
 }

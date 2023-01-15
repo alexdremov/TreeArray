@@ -434,4 +434,34 @@ final class TreeArrayTests: XCTestCase {
         let b = TreeArray(a)
         XCTAssertEqual(a, b.array)
     }
+    
+    func testReverse() {
+        let testSize = 1000000
+        var a = Array(0..<testSize).shuffled()
+        var b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a.reverse()
+        b.reverse()
+        
+        XCTAssertEqual(a, b.array)
+    }
+    
+    func testReverseEmpty() {
+        var a = [Int]()
+        var b = TreeArray(a)
+        XCTAssertEqual(a, b.array)
+        
+        a.reverse()
+        b.reverse()
+        
+        XCTAssertEqual(a, b.array)
+    }
+    
+    func testReversed() {
+        let testSize = 1000000
+        let a = Array(0..<testSize).shuffled()
+        let b = TreeArray(a)
+        XCTAssertEqual(a.reversed(), b.reversed())
+    }
 }
