@@ -16,7 +16,7 @@ extension Sequence {
         }
         return kalimba
     }
-    
+
     func kalimbaOrdered3() -> TreeArray<Element> {
         var odds: TreeArray<Element> = []
         var evens: TreeArray<Element> = []

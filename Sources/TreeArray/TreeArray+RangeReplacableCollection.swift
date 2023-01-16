@@ -9,14 +9,14 @@ import Foundation
 
 extension TreeArray: RangeReplaceableCollection {
     @inlinable
-    public mutating func append<S>(contentsOf newElements: S) where S : Sequence, T == S.Element {
+    public mutating func append<S>(contentsOf newElements: S) where S: Sequence, T == S.Element {
         ensureUniqelyReferenced()
         requireAdditional(elements: UInt(newElements.underestimatedCount))
         for elem in newElements {
             insertKnownUniqelyReferenced(elem, at: Int(size))
         }
     }
-    
+
     @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
         head = 0
@@ -26,7 +26,7 @@ extension TreeArray: RangeReplaceableCollection {
         }
         storage = Self.createNewStorage(capacity: 8)
     }
-    
+
     @inlinable
     public mutating func reserveCapacity(_ n: Int) {
         ensureUniqelyReferenced()
@@ -35,9 +35,9 @@ extension TreeArray: RangeReplaceableCollection {
         }
         requireAdditional(elements: UInt(n) - capacity)
     }
-    
+
     @inlinable
-    public mutating func replaceSubrange<C>(_ subrange: Range<Int>, with newElements: C) where C : Collection, T == C.Element {
+    public mutating func replaceSubrange<C>(_ subrange: Range<Int>, with newElements: C) where C: Collection, T == C.Element {
         removeSubrange(subrange)
         insert(contentsOf: newElements, at: subrange.startIndex)
     }

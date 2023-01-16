@@ -8,7 +8,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-collections-benchmark", from: "0.0.3"),
-    .package(name: "TreeArray", path: ".."),
+    .package(name: "TreeArray", path: "..")
   ],
   targets: [
     .target(

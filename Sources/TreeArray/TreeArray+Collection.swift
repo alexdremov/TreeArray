@@ -9,31 +9,31 @@ import Foundation
 extension TreeArray: Collection, Sequence {
     public struct Iterator: IteratorProtocol {
         public typealias Element = T
-        
+
         @usableFromInline
         let storage: ManagedBuffer<Void, TreeNode>
-        
+
         @usableFromInline
         var visitStack: ContiguousArray<NodeIndex> = []
-        
+
         @inlinable
         var currentNode: NodeIndex? {
             visitStack.last
         }
-        
+
         @inlinable
         init(tree: TreeArray) {
             self.init(tree: tree, start: tree.head)
             propagateLeft()
         }
-        
+
         @inlinable
         init(tree: TreeArray, start: NodeIndex) {
             self.storage = tree.storage
             visitStack.reserveCapacity(Int(log2(CGFloat(tree.size + 1))) + 2)
             visitStack.append(tree.head)
         }
-        
+
         @inlinable
         mutating func propagateLeft() {
             var pointer: UnsafeMutablePointer<TreeNode>!
@@ -45,7 +45,7 @@ extension TreeArray: Collection, Sequence {
                 visitStack.append(pointer[Int(last)].left)
             }
         }
-        
+
         @inlinable
         public mutating func next() -> Element? {
             guard let topIndex = visitStack.last else {
@@ -59,7 +59,7 @@ extension TreeArray: Collection, Sequence {
             advance(by: 1)
             return elemToReturn
         }
-        
+
         @inlinable
         mutating func advance(by: Int) {
             var pointer: UnsafeMutablePointer<TreeNode>!
@@ -77,42 +77,42 @@ extension TreeArray: Collection, Sequence {
             }
         }
     }
-    
+
     @inlinable
     public func makeIterator() -> Iterator {
         .init(tree: self)
     }
-    
+
     @inlinable
     func makeIterator(starting node: NodeIndex) -> Iterator {
         .init(tree: self, start: node)
     }
-    
+
     @inlinable
     public var startIndex: Int {
         0
     }
-    
+
     @inlinable
     public var endIndex: Int {
         Int(size)
     }
-    
+
     @inlinable
     public var isEmpty: Bool {
         size == 0
     }
-    
+
     @inlinable
     public func index(after i: Int) -> Int {
         i + 1
     }
-    
+
     @inlinable
     public func index(before i: Int) -> Int {
         i - 1
     }
-    
+
     @inlinable
     mutating public func removeSubrange(_ bounds: Range<Int>) {
         if bounds.isEmpty {
@@ -124,7 +124,7 @@ extension TreeArray: Collection, Sequence {
         self.head = merge(left: left, right: right)
         deleteSubtree(root: leftover)
     }
-    
+
     @inlinable
     mutating public func insert<S>(contentsOf newElements: S, at i: Int)
     where S: Collection, T == S.Element {
@@ -136,17 +136,17 @@ extension TreeArray: Collection, Sequence {
             insertKnownUniqelyReferenced(elem, at: pos + i)
         }
     }
-    
+
     @inlinable
     mutating public func append(_ value: Element) {
         insert(value, at: Int(size))
     }
-    
+
     @inlinable
     mutating public func appendFront(_ value: Element) {
         insert(value, at: 0)
     }
-    
+
     @inlinable
     mutating public func reverse() {
         guard size > 0 else {
@@ -155,7 +155,7 @@ extension TreeArray: Collection, Sequence {
         ensureUniqelyReferenced()
         reverseSubtreeKnownUniqelyReferenced(starting: head)
     }
-    
+
     @inlinable
     mutating func reverseSubtreeKnownUniqelyReferenced(starting: NodeIndex) {
         guard starting != 0 else {

@@ -13,7 +13,7 @@ extension TreeArray: Equatable where Element: Equatable {
         guard lhs.count == rhs.count else {
             return false
         }
-        
+
         for (i, j) in zip(lhs, rhs) {
             guard i == j else {
                 return false
@@ -21,13 +21,13 @@ extension TreeArray: Equatable where Element: Equatable {
         }
         return true
     }
-    
+
     @inlinable
-    public static func == (lhs: TreeArray, rhs: Array<Element>) -> Bool {
+    public static func == (lhs: TreeArray, rhs: [Element]) -> Bool {
         guard lhs.count == rhs.count else {
             return false
         }
-        
+
         for (i, j) in zip(lhs, rhs) {
             guard i == j else {
                 return false
