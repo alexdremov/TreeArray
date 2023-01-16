@@ -21,6 +21,7 @@ let package = Package(
     .executableTarget(
       name: "benchmark",
       dependencies: [
+        .product(name: "CollectionsBenchmark", package: "swift-collections-benchmark"),
         "Benchmarks"
       ],
       path: "Sources/benchmark-tool"

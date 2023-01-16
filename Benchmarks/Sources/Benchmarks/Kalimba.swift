@@ -2,7 +2,7 @@ import Foundation
 import TreeArray
 
 extension Sequence {
-  func kalimbaOrdered() -> TreeArray<Element> {
+    public func kalimbaOrdered() -> TreeArray<Element> {
     var kalimba: TreeArray<Element> = []
     kalimba.reserveCapacity(underestimatedCount)
     var insertAtStart = false
@@ -17,7 +17,7 @@ extension Sequence {
     return kalimba
   }
 
-  func kalimbaOrdered3() -> TreeArray<Element> {
+    public func kalimbaOrdered3() -> TreeArray<Element> {
     var odds: TreeArray<Element> = []
     var evens: TreeArray<Element> = []
     odds.reserveCapacity(underestimatedCount)
