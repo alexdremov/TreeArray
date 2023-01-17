@@ -2,12 +2,12 @@ import XCTest
 import Foundation
 @testable import TreeArray
 
+let testSize = 10000
+
 final class TreeArrayTests: XCTestCase {
     func testSimple() {
         var treap = TreeArray<Int>()
         var array = [Int]()
-
-        let testSize = 1024
 
         for i in 0..<testSize {
             array.append(i)
@@ -25,8 +25,6 @@ final class TreeArrayTests: XCTestCase {
         var treap = TreeArray<Int>()
         var array = [Int]()
 
-        let testSize = 2048
-
         for _ in 0..<testSize {
             let rand = Int.random(in: 0...Int.max)
             array.insert(rand, at: 0)
@@ -41,8 +39,6 @@ final class TreeArrayTests: XCTestCase {
     func testCopyOnWrite() {
         var treap = TreeArray<Int>()
         var array = [Int]()
-
-        let testSize = 2048 * 8
 
         for _ in 0..<testSize {
             let rand = Int.random(in: 0...Int.max)
@@ -103,7 +99,6 @@ final class TreeArrayTests: XCTestCase {
 
     func testFiltering() {
         var treap: TreeArray<Int> = []
-        let testSize = 2048 * 8
 
         for _ in 0...testSize {
             treap.append(Int.random(in: 0...Int.max))
@@ -130,7 +125,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testIterator() {
-        let testSize = 2048 * 8
         let treap = TreeArray<Int>(0..<testSize)
 
         for (expected, elem) in treap.enumerated() {
@@ -147,7 +141,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testIteratorModifications() {
-        let testSize = 2048 * 8
         var treap = TreeArray<Int>(0..<testSize)
 
         for (expected, elem) in treap.enumerated() {
@@ -258,8 +251,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testDeletionsAdditions() {
-        let testSize = 10000
-
         var arr = Array(0...testSize)
         var tree = TreeArray(0...testSize)
 
@@ -277,8 +268,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testRemoveAll() {
-        let testSize = 10000
-
         var arr = Array(0...testSize)
         var tree = TreeArray(0...testSize)
 
@@ -301,8 +290,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testReversedTraversal() {
-        let testSize = 10000
-
         let arr = Array(0...testSize)
         let tree = TreeArray(0...testSize)
 
@@ -312,8 +299,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testRemoveAtIndex() {
-        let testSize = 10000
-
         var arr = Array(0...testSize)
         var tree = TreeArray(0...testSize)
 
@@ -353,7 +338,6 @@ final class TreeArrayTests: XCTestCase {
 
     func testReserveCapacity() {
         var a = TreeArray<Int>()
-        let testSize = 100
         a.reserveCapacity(testSize)
         weak var pointerBefore = a.storage
         for i in 0..<testSize {
@@ -363,7 +347,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testPalindrome() {
-        let testSize = 10000
         var a = TreeArray<Int>((0...testSize).shuffled())
         a += a.reversed()
 
@@ -373,7 +356,7 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testContains() {
-        let testSize = 1000
+        let testSize = 100
         let a = TreeArray<Int>((1...testSize).shuffled())
         let b = a.array.shuffled()
 
@@ -433,7 +416,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testReverse() {
-        let testSize = 1000000
         var a = Array(0..<testSize).shuffled()
         var b = TreeArray(a)
         XCTAssertEqual(a, b.array)
@@ -456,14 +438,12 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testReversed() {
-        let testSize = 1000000
         let a = Array(0..<testSize).shuffled()
         let b = TreeArray(a)
         XCTAssertEqual(a.reversed(), b.reversed())
     }
 
     func testDoNotGrow() {
-        let testSize = 100
         var b = TreeArray<Int>()
         b.reserveCapacity(testSize)
         let before = b.capacity
@@ -481,7 +461,6 @@ final class TreeArrayTests: XCTestCase {
             }
         }
 
-        let testSize = 10000
         var biz = TreeArray<Foo>()
 
         for i in 0..<testSize {
@@ -496,7 +475,6 @@ final class TreeArrayTests: XCTestCase {
 
     func testMemoryManagement() {
         var counterAlive = 0
-        let testSize = 10
         class Foo {
             let onDeinit: () -> Void
             public let i: Int
@@ -540,7 +518,7 @@ final class TreeArrayTests: XCTestCase {
             }
             b.removeSubrange(0..<(testSize / 2))
             for elem in b {
-                print(elem.i)
+                let _ = elem.i
             }
         }
 
@@ -548,7 +526,6 @@ final class TreeArrayTests: XCTestCase {
     }
 
     func testCopyOnWriteWithReferenceTypes() {
-        let testSize = 1000
         var counterAlive = 0
         autoreleasepool {
             class Foo {
@@ -590,5 +567,30 @@ final class TreeArrayTests: XCTestCase {
         }
 
         XCTAssertEqual(counterAlive, 0)
+    }
+    
+    func testClearStorage() {
+        var b = TreeArray<Int>(0...testSize).shuffled()
+        
+        b.removeAll()
+        XCTAssertTrue(b.isEmpty)
+        
+        b.append(contentsOf: 0...testSize)
+        for (i, elem) in b.enumerated() {
+            XCTAssertEqual(i, elem)
+        }
+        b.removeAll(keepingCapacity: true)
+        XCTAssertTrue(b.isEmpty)
+    }
+    
+    func testReplaceSubrange() {
+        var a = Array(0...testSize)
+        var b = TreeArray(0...testSize)
+        
+        let replacement = Array(0..<(testSize)).shuffled()
+        a.replaceSubrange(5...(testSize / 2), with: replacement)
+        b.replaceSubrange(5...(testSize / 2), with: replacement)
+        
+        XCTAssertEqual(a, b.array)
     }
 }

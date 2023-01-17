@@ -327,9 +327,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
     @inlinable
     func getIndexOf(node: NodeIndex, x: Int) -> NodeIndex {
-        if node == 0 {
-            return 0
-        }
+        assert(node != 0, "Invalid node \(node)")
         return storage.withUnsafeMutablePointerToElements { pointer in
             let curKey = pointer[node].leftDepth(storage: storage)
             if curKey < x {
@@ -426,10 +424,8 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
             fatalError("Index \(x) out of range in structure of size \(size)")
         }
         mutating set(value) {
+            precondition(!(head == 0 || x >= size), "Index \(x) out of range in structure of size \(size)")
             ensureUniqelyReferenced()
-            if head == 0 || x >= size {
-                fatalError("Index \(x) out of range in structure of size \(size)")
-            }
             setAtIndexKnownUniqelyReferenced(node: head, x: x, value: value)
         }
     }

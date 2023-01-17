@@ -16,17 +16,3 @@ extension ManagedBuffer: Equatable where Header == Void {
         }
     }
 }
-
-extension UnsafeMutablePointer {
-    @inlinable
-    subscript(i: UInt) -> Self.Pointee {
-        self[Int(i)]
-    }
-}
-
-extension RandomAccessCollection where Index == Int {
-    @inlinable
-    subscript(i: UInt) -> Self.Element {
-        self[Index(i)]
-    }
-}
