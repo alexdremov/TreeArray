@@ -21,7 +21,7 @@ extension TreeArray.TreeNodeBuffer {
             }
         }
     }
-    
+
     @inlinable
     var size: Int {
         get {
@@ -35,7 +35,7 @@ extension TreeArray.TreeNodeBuffer {
             }
         }
     }
-    
+
     @inlinable
     var freePointer: TreeArray.NodeIndex {
         get {
@@ -49,7 +49,7 @@ extension TreeArray.TreeNodeBuffer {
             }
         }
     }
-    
+
     @inlinable
     func deinitSubtree(_ subtree: TreeArray.NodeIndex) {
         withUnsafeMutablePointerToElements { pointer in

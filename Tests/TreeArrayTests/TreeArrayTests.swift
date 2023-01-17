@@ -461,18 +461,18 @@ final class TreeArrayTests: XCTestCase {
         let b = TreeArray(a)
         XCTAssertEqual(a.reversed(), b.reversed())
     }
-    
+
     func testDoNotGrow() {
         let testSize = 100
         var b = TreeArray<Int>()
         b.reserveCapacity(testSize)
         let before = b.capacity
-        
+
         b.append(contentsOf: (0..<testSize))
         XCTAssertLessThan(Int(b.capacity), testSize * 2)
         XCTAssertEqual(b.capacity, before)
     }
-    
+
     func testReferenceTypesPreserving() {
         class Foo {
             public let i: Int
@@ -480,20 +480,20 @@ final class TreeArrayTests: XCTestCase {
                 self.i = i
             }
         }
-        
+
         let testSize = 10000
         var biz = TreeArray<Foo>()
-        
+
         for i in 0..<testSize {
             biz.append(Foo(i: i))
         }
-        
+
         for i in 0..<testSize {
             let actual = biz[i].i
             XCTAssertEqual(i, actual)
         }
     }
-    
+
     func testMemoryManagement() {
         var counterAlive = 0
         let testSize = 10
@@ -504,15 +504,15 @@ final class TreeArrayTests: XCTestCase {
                 self.onDeinit = onDeinit
                 self.i = i
             }
-            
+
             deinit {
                 onDeinit()
             }
         }
-        
+
         autoreleasepool {
             var b: TreeArray? = TreeArray<Foo>()
-            
+
             for i in 0..<testSize {
                 counterAlive += 1
                 b?.append(
@@ -521,15 +521,14 @@ final class TreeArrayTests: XCTestCase {
                     }
                 )
             }
-            
+
             b = nil
         }
-    
-        
+
         XCTAssertEqual(counterAlive, 0)
-    
+
         var b: TreeArray = TreeArray<Foo>()
-        
+
         autoreleasepool {
             for i in 0..<testSize {
                 counterAlive += 1
@@ -544,10 +543,10 @@ final class TreeArrayTests: XCTestCase {
                 print(elem.i)
             }
         }
-        
+
         XCTAssertEqual(counterAlive, b.count)
     }
-    
+
     func testCopyOnWriteWithReferenceTypes() {
         let testSize = 1000
         var counterAlive = 0
@@ -559,14 +558,14 @@ final class TreeArrayTests: XCTestCase {
                     self.onDeinit = onDeinit
                     self.i = i
                 }
-                
+
                 deinit {
                     onDeinit()
                 }
             }
-            
+
             var b: TreeArray = TreeArray<Foo>()
-            
+
             for i in 0..<testSize {
                 counterAlive += 1
                 b.append(
@@ -575,21 +574,21 @@ final class TreeArrayTests: XCTestCase {
                     }
                 )
             }
-            
+
             let otherArray = b
-            
+
             b.removeSubrange(1..<(testSize - 1))
             XCTAssertEqual(b.size, 2)
             XCTAssertEqual(b[0].i, 0)
             XCTAssertEqual(b[1].i, testSize - 1)
-            
+
             XCTAssertEqual(counterAlive, testSize)
-            
+
             for i in 0..<testSize {
                 XCTAssertEqual(otherArray[i].i, i)
             }
         }
-        
+
         XCTAssertEqual(counterAlive, 0)
     }
 }
