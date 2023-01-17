@@ -84,9 +84,7 @@ final class TreeArrayTests: XCTestCase {
 
         treap.insert(contentsOf: treap.array, at: 9)
 
-        for i in 0..<arrResult.count {
-            XCTAssertEqual(treap[i], arrResult[i])
-        }
+        XCTAssertEqual(treap.array, arrResult)
     }
 
     func testRepeating() {

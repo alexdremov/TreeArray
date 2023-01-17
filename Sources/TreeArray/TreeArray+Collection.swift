@@ -136,6 +136,42 @@ extension TreeArray: Collection, Sequence {
             insertKnownUniqelyReferenced(elem, at: pos + i)
         }
     }
+    
+    @inlinable
+    mutating public func insert(contentsOf newElements: Array<T>, at i: Int){
+        insert(contentsOf: TreeArray(newElements), at: i)
+    }
+    
+    @inlinable
+    mutating public func insert(contentsOf newElements: UnsafeBufferPointer<T>, at i: Int){
+        insert(contentsOf: TreeArray(newElements), at: i)
+    }
+    
+    @inlinable
+    mutating public func append(contentsOf constructedTree: TreeArray) {
+        insert(contentsOf: constructedTree, at: size)
+    }
+    
+    @inlinable
+    mutating public func insert(contentsOf constructedTree: TreeArray, at i: Int) {
+        if constructedTree.isEmpty {
+            return
+        }
+        guard i >= 0, i <= size else {
+            fatalError("Unnable to insert at index \(i) in the structure of size \(size)")
+        }
+        ensureUniqelyReferenced()
+        requireAdditional(elements: constructedTree.count)
+        let constructedHead = copyTreeIntoThisMemoryKnownEnoughSpace(tree: constructedTree, startingFrom: constructedTree.head)
+        let (before, after) = split(node: head, no: i)
+        head = merge(
+            left: merge(
+                left: before,
+                right: constructedHead
+            ),
+            right: after
+        )
+    }
 
     @inlinable
     mutating public func append(_ value: Element) {
@@ -145,27 +181,5 @@ extension TreeArray: Collection, Sequence {
     @inlinable
     mutating public func appendFront(_ value: Element) {
         insert(value, at: 0)
-    }
-
-    @inlinable
-    mutating public func reverse() {
-        guard size > 0 else {
-            return
-        }
-        ensureUniqelyReferenced()
-        reverseSubtreeKnownUniqelyReferenced(starting: head)
-    }
-
-    @inlinable
-    mutating func reverseSubtreeKnownUniqelyReferenced(starting: NodeIndex) {
-        guard starting != 0 else {
-            return
-        }
-        let istarting = Int(starting)
-        storage.withUnsafeMutablePointerToElements { pointer in
-            swap(&pointer[istarting].left, &pointer[istarting].right)
-            reverseSubtreeKnownUniqelyReferenced(starting: pointer[istarting].left)
-            reverseSubtreeKnownUniqelyReferenced(starting: pointer[istarting].right)
-        }
     }
 }

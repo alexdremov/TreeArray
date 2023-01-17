@@ -41,4 +41,36 @@ extension TreeArray: RangeReplaceableCollection {
         removeSubrange(subrange)
         insert(contentsOf: newElements, at: subrange.startIndex)
     }
+    
+    @inlinable
+    public mutating func replaceSubrange(_ subrange: Range<Int>, with newElements: TreeArray) {
+        removeSubrange(subrange)
+        insert(contentsOf: newElements, at: subrange.startIndex)
+    }
+    
+    /**
+     - returns: head of tree copied into this memory
+     */
+    @inlinable
+    mutating func copyTreeIntoThisMemoryKnownEnoughSpace(tree: TreeArray, startingFrom: NodeIndex) -> NodeIndex {
+        let newHeadPosition = allocateNode()
+        tree.storage.withUnsafeMutablePointerToElements { pointerOtherTree in
+            storage.withUnsafeMutablePointerToElements { pointerThisTree in
+                pointerThisTree[newHeadPosition] = pointerOtherTree[startingFrom]
+                if pointerOtherTree[startingFrom].leftExists {
+                    pointerThisTree[newHeadPosition].left = copyTreeIntoThisMemoryKnownEnoughSpace(
+                        tree: tree,
+                        startingFrom: pointerOtherTree[startingFrom].left
+                    )
+                }
+                if pointerOtherTree[startingFrom].rightExists {
+                    pointerThisTree[newHeadPosition].right = copyTreeIntoThisMemoryKnownEnoughSpace(
+                        tree: tree,
+                        startingFrom: pointerOtherTree[startingFrom].right
+                    )
+                }
+            }
+        }
+        return newHeadPosition
+    }
 }
