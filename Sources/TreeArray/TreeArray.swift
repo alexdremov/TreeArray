@@ -47,7 +47,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         var priority: Int = .fastRandom
 
         @usableFromInline
-        var depth: Int = 1
+        var depth: UInt = 1
 
         @usableFromInline
         var left: NodeIndex = 0
@@ -89,7 +89,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         @inlinable
         func leftDepth(storage: Storage) -> Int {
             storage.withUnsafeMutablePointerToElements { pointer in
-                return leftExists ? pointer[left].depth: 0
+                return leftExists ? Int(pointer[left].depth) : 0
             }
         }
     }
