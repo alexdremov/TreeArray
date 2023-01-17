@@ -591,4 +591,11 @@ final class TreeArrayTests: XCTestCase {
         
         XCTAssertEqual(a, b.array)
     }
+    
+    func testOptimize() {
+        var b = TreeArray((0...testSize).shuffled())
+        let a = b.array
+        XCTAssertEqual(a, b.array)
+        XCTAssertEqual(a, b.optimized().array)
+    }
 }

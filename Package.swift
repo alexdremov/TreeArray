@@ -26,6 +26,12 @@ let package = Package(
             ]),
         .testTarget(
             name: "TreeArrayTests",
-            dependencies: ["TreeArray"])
+            dependencies: ["TreeArray"]
+        ),
+        .executableTarget(
+            name: "RandomTests",
+            dependencies: ["TreeArray"],
+            path: "Sources/RandomTests"
+        )
     ]
 )

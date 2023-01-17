@@ -394,6 +394,20 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
             }
         }
     }
+    
+    @inlinable
+    public init(optimized content: TreeArray) {
+        self.init(initialCapacity: Swift.max(content.count, 8))
+        guard !content.isEmpty else {
+            return
+        }
+        constructEmptyHeap(elementsNum: content.count)
+        storage.withUnsafeMutablePointerToElements { pointer in
+            for (i, elem) in content.enumerated() {
+                pointer[i + 1].key = elem
+            }
+        }
+    }
 
     @inlinable
     public init(arrayLiteral content: Element...) {
