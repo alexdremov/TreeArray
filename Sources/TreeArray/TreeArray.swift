@@ -23,10 +23,10 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     public typealias Element = T
 
     @usableFromInline
-    internal typealias NodeIndex = Int
+    typealias NodeIndex = Int
 
     @usableFromInline
-    internal typealias Storage = TreeNodeBuffer
+    typealias Storage = TreeNodeBuffer
 
     @usableFromInline
     final class TreeNodeBuffer: ManagedBuffer<Void, TreeNode> {
@@ -500,7 +500,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
-    internal init(initialCapacity: Int) {
+    init(initialCapacity: Int) {
         storage = Self.createNewStorage(capacity: initialCapacity)
         initEmptyStorage()
     }
