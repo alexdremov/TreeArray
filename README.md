@@ -4,7 +4,7 @@ Swift implementation of implicit treap. Data structure with efficient random ins
 
 ## Usage
 
-TreeArray behaves like an usual array but has the different implementation under the hood that allows some operations to work faster.
+TreeArray **behaves like an usual array** but has the different implementation under the hood that allows some operations to work faster. You can just replace `Array` with `TreeArray` and it should work as expected.
 
 ```swift
 import TreeArray
