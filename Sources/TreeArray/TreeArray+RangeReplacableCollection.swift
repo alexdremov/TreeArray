@@ -11,7 +11,7 @@ extension TreeArray: RangeReplaceableCollection {
     @inlinable
     public mutating func append<S>(contentsOf newElements: S) where S: Sequence, T == S.Element {
         ensureUniqelyReferenced()
-        requireAdditional(elements: UInt(newElements.underestimatedCount))
+        requireAdditional(elements: newElements.underestimatedCount)
         for elem in newElements {
             insertKnownUniqelyReferenced(elem, at: Int(size))
         }
@@ -19,12 +19,18 @@ extension TreeArray: RangeReplaceableCollection {
 
     @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
-        head = 0
+        defer {
+            head = 0
+            size = 0
+            freeSize = 0
+            freePointer = 0
+        }
         if keepCapacity {
             storageClear()
             return
         }
         storage = Self.createNewStorage(capacity: 8)
+        initEmptyStorage()
     }
 
     @inlinable
@@ -33,7 +39,7 @@ extension TreeArray: RangeReplaceableCollection {
         guard n > capacity else {
             return
         }
-        requireAdditional(elements: UInt(n) - capacity)
+        requireExactlyTotal(newCapacity: n + 1)
     }
 
     @inlinable

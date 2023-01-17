@@ -119,8 +119,8 @@ extension TreeArray: Collection, Sequence {
             return
         }
         ensureUniqelyReferenced()
-        let (left, middle) = split(node: head, no: UInt(bounds.startIndex))
-        let (leftover, right) = split(node: middle, no: UInt(bounds.count))
+        let (left, middle) = split(node: head, no: bounds.startIndex)
+        let (leftover, right) = split(node: middle, no: bounds.count)
         self.head = merge(left: left, right: right)
         deleteSubtree(root: leftover)
     }

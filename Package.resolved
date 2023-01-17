@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftwyhash",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lemire/SwiftWyhash",
+      "state" : {
+        "revision" : "4020f6d5c8bf003028168475bbdb70434333adf0",
+        "version" : "0.1.1"
+      }
+    }
+  ],
+  "version" : 2
+}

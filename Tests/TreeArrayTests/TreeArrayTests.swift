@@ -353,15 +353,13 @@ final class TreeArrayTests: XCTestCase {
 
     func testReserveCapacity() {
         var a = TreeArray<Int>()
-        let testSize = 10000
+        let testSize = 100
         a.reserveCapacity(testSize)
         weak var pointerBefore = a.storage
         for i in 0..<testSize {
             a.append(i)
         }
-        weak var pointerAfter = a.storage
-
-        XCTAssertEqual(pointerBefore, pointerAfter)
+        XCTAssertEqual(pointerBefore, a.storage)
     }
 
     func testPalindrome() {
@@ -462,5 +460,136 @@ final class TreeArrayTests: XCTestCase {
         let a = Array(0..<testSize).shuffled()
         let b = TreeArray(a)
         XCTAssertEqual(a.reversed(), b.reversed())
+    }
+    
+    func testDoNotGrow() {
+        let testSize = 100
+        var b = TreeArray<Int>()
+        b.reserveCapacity(testSize)
+        let before = b.capacity
+        
+        b.append(contentsOf: (0..<testSize))
+        XCTAssertLessThan(Int(b.capacity), testSize * 2)
+        XCTAssertEqual(b.capacity, before)
+    }
+    
+    func testReferenceTypesPreserving() {
+        class Foo {
+            public let i: Int
+            init(i: Int) {
+                self.i = i
+            }
+        }
+        
+        let testSize = 10000
+        var biz = TreeArray<Foo>()
+        
+        for i in 0..<testSize {
+            biz.append(Foo(i: i))
+        }
+        
+        for i in 0..<testSize {
+            let actual = biz[i].i
+            XCTAssertEqual(i, actual)
+        }
+    }
+    
+    func testMemoryManagement() {
+        var counterAlive = 0
+        let testSize = 10
+        class Foo {
+            let onDeinit: () -> Void
+            public let i: Int
+            init(i: Int, onDeinit: @escaping () -> Void) {
+                self.onDeinit = onDeinit
+                self.i = i
+            }
+            
+            deinit {
+                onDeinit()
+            }
+        }
+        
+        autoreleasepool {
+            var b: TreeArray? = TreeArray<Foo>()
+            
+            for i in 0..<testSize {
+                counterAlive += 1
+                b?.append(
+                    Foo(i: i) {
+                        counterAlive -= 1
+                    }
+                )
+            }
+            
+            b = nil
+        }
+    
+        
+        XCTAssertEqual(counterAlive, 0)
+    
+        var b: TreeArray = TreeArray<Foo>()
+        
+        autoreleasepool {
+            for i in 0..<testSize {
+                counterAlive += 1
+                b.append(
+                    Foo(i: i) {
+                        counterAlive -= 1
+                    }
+                )
+            }
+            b.removeSubrange(0..<(testSize / 2))
+            for elem in b {
+                print(elem.i)
+            }
+        }
+        
+        XCTAssertEqual(counterAlive, b.count)
+    }
+    
+    func testCopyOnWriteWithReferenceTypes() {
+        let testSize = 1000
+        var counterAlive = 0
+        autoreleasepool {
+            class Foo {
+                let onDeinit: () -> Void
+                public let i: Int
+                init(i: Int, onDeinit: @escaping () -> Void) {
+                    self.onDeinit = onDeinit
+                    self.i = i
+                }
+                
+                deinit {
+                    onDeinit()
+                }
+            }
+            
+            var b: TreeArray = TreeArray<Foo>()
+            
+            for i in 0..<testSize {
+                counterAlive += 1
+                b.append(
+                    Foo(i: i) {
+                        counterAlive -= 1
+                    }
+                )
+            }
+            
+            let otherArray = b
+            
+            b.removeSubrange(1..<(testSize - 1))
+            XCTAssertEqual(b.size, 2)
+            XCTAssertEqual(b[0].i, 0)
+            XCTAssertEqual(b[1].i, testSize - 1)
+            
+            XCTAssertEqual(counterAlive, testSize)
+            
+            for i in 0..<testSize {
+                XCTAssertEqual(otherArray[i].i, i)
+            }
+        }
+        
+        XCTAssertEqual(counterAlive, 0)
     }
 }

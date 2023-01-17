@@ -14,8 +14,8 @@ extension TreeArray: MutableCollection {
             return
         }
         ensureUniqelyReferenced()
-        let nodeI = getIndexOf(node: head, x: UInt(i))
-        let nodeJ = getIndexOf(node: head, x: UInt(j))
+        let nodeI = getIndexOf(node: head, x: i)
+        let nodeJ = getIndexOf(node: head, x: j)
         guard nodeI != 0, nodeJ != 0 else {
             fatalError("Unnable to swap \(i) with \(j) in structure of size \(count)")
         }

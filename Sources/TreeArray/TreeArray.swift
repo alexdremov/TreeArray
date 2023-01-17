@@ -8,54 +8,147 @@
 import Foundation
 import SwiftWyhash
 
-extension UInt {
+extension Int {
     @usableFromInline
     static var generator = WyRand(seed: 42)
 
     @inlinable
-    static var fastRandom: UInt {
-        generator.next()
+    static var fastRandom: Int {
+        Int(bitPattern: generator.next())
     }
 }
 
 @frozen
 public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     public typealias Element = T
-
+    
     @usableFromInline
-    internal typealias NodeIndex = UInt
-
+    internal typealias NodeIndex = Int
+    
     @usableFromInline
-    internal typealias Storage = ManagedBuffer<Void, TreeNode>
-
+    internal typealias Storage = TreeNodeBuffer
+    
+    @usableFromInline
+    final class TreeNodeBuffer: ManagedBuffer<Void, TreeNode> {
+        @inlinable
+        deinit {
+            withUnsafeMutablePointerToElements { pointer in
+                deinitSubtree(head)
+            }
+        }
+    }
+    
+    @usableFromInline
+    struct TreeNode {
+        @usableFromInline
+        var key: Element?
+        
+        @usableFromInline
+        var priority: Int = .fastRandom
+        
+        @usableFromInline
+        var depth: Int = 1
+        
+        @usableFromInline
+        var left: NodeIndex = 0
+        
+        @usableFromInline
+        var right: NodeIndex = 0
+        
+        @inlinable
+        init(key: T?, left: NodeIndex = 0, right: NodeIndex = 0) {
+            self.key = key
+            self.left = left
+            self.right = right
+        }
+        
+        @inlinable
+        init() {
+        }
+        
+        @inlinable
+        var next: NodeIndex {
+            get {
+                right
+            }
+            set {
+                right = newValue
+            }
+        }
+        
+        @inlinable
+        var leftExists: Bool {
+            left != 0
+        }
+        
+        @inlinable
+        var rightExists: Bool {
+            right != 0
+        }
+        
+        @inlinable
+        func leftDepth(storage: Storage) -> Int {
+            storage.withUnsafeMutablePointerToElements { pointer in
+                return leftExists ? pointer[left].depth: 0
+            }
+        }
+    }
+    
     @usableFromInline
     var storage: Storage
-
-    @usableFromInline
-    var head: NodeIndex = 0
-
-    @usableFromInline
-    var size: UInt = 0
-
+    
     @inlinable
-    var capacity: UInt {
-        UInt(storage.capacity)
+    var head: NodeIndex {
+        get {
+            storage.head
+        }
+        set {
+            storage.head = newValue
+        }
+    }
+    
+    @inlinable
+    var capacity: Int {
+        storage.capacity
+    }
+    
+    @inlinable
+    var size: Int {
+        get {
+            storage.size
+        }
+        set {
+            storage.size = newValue
+        }
+    }
+    
+    @usableFromInline
+    var freeSize: Int = 0
+    
+    @usableFromInline
+    var freePointer: NodeIndex {
+        get {
+            storage.freePointer
+        }
+        set {
+            storage.freePointer = newValue
+        }
+    }
+    
+    @inlinable
+    var usedStorageSpace: Int {
+        freeSize + size + 1 // + 1 on behalf of zero node
     }
 
-    @usableFromInline
-    var freeSize: UInt = 0
-
-    @usableFromInline
-    var freePointer: NodeIndex = 0
-
-    @usableFromInline
-    static func createNewStorage(capacity: UInt) -> Storage {
-        let instance = Storage.create(minimumCapacity: Int(capacity)) {_ in }
-        instance.withUnsafeMutablePointerToElements { pointer in
-            pointer[0] = TreeNode()
-            pointer[0].depth = 0
-        }
-        return instance
+    /**
+     - returns: uninitialized buffer
+     */
+    @inlinable
+    static func createNewStorage(capacity: Int) -> Storage {
+        Storage.create(
+            minimumCapacity: Swift.max(capacity, 1),
+            makingHeaderWith: {_ in }
+        )  as! Storage
     }
 
     @inlinable
@@ -63,37 +156,48 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         let instance = Self.createNewStorage(capacity: capacity)
         storage.withUnsafeMutablePointerToElements { pointer in
             instance.withUnsafeMutablePointerToElements { newPointer in
-                newPointer.initialize(from: pointer, count: Int(capacity))
+                newPointer.initialize(repeating: TreeNode(), count: usedStorageSpace)
+                newPointer.assign(from: pointer, count: usedStorageSpace)
             }
         }
         return instance
     }
 
     @inlinable
-    mutating func requireAdditional(elements: UInt) {
-        let requireSize = size + freeSize + elements + 1
-        if requireSize < capacity {
+    mutating func requireAdditional(elements: Int) {
+        let requireSize = usedStorageSpace + elements
+        guard requireSize > capacity else {
             return
         }
 
-        let increaseFactor: UInt = 2
+        let increaseFactor: Int = 2
         let newCapacity = requireSize * increaseFactor
+        requireExactlyTotal(newCapacity: newCapacity)
+    }
+    
+    @inlinable
+    mutating func requireExactlyTotal(newCapacity: Int) {
+        guard newCapacity > capacity else {
+            return
+        }
         let newInstance = Self.createNewStorage(capacity: newCapacity)
         storage.withUnsafeMutablePointerToElements { pointer in
             newInstance.withUnsafeMutablePointerToElements { newStorage in
-                newStorage.moveInitialize(from: pointer, count: Int(capacity))
+                newStorage.initialize(repeating: TreeNode(), count: usedStorageSpace)
+                newStorage.assign(from: pointer, count: usedStorageSpace)
             }
         }
+        
         storage = newInstance
     }
 
     @inlinable
     mutating func allocateNode() -> NodeIndex {
-        if freePointer == 0 {
+        if freeSize == 0 {
             requireAdditional(elements: 1)
             size += 1
             storage.withUnsafeMutablePointerToElements { pointer in
-                pointer[Int(size)] = TreeNode()
+                (pointer + size).initialize(to: TreeNode())
             }
             return size
         }
@@ -101,14 +205,12 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         assert(newNodeValue > 0, "Zero node is reserved")
 
         freeSize -= 1
-        storage.withUnsafeMutablePointerToElements { pointer in
-            let inewNodeValue = Int(newNodeValue)
-            freePointer = pointer[inewNodeValue].next
-            pointer[inewNodeValue].depth = 1
-            pointer[inewNodeValue].left = 0
-            pointer[inewNodeValue].right = 0
-        }
         size += 1
+        
+        storage.withUnsafeMutablePointerToElements { pointer in
+            freePointer = pointer[newNodeValue].next
+            pointer[newNodeValue] = TreeNode()
+        }
         return newNodeValue
     }
 
@@ -116,27 +218,36 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     mutating func deleteNode(at pos: NodeIndex) {
         assert(pos > 0, "Zero node is reserved")
         assert(size > 0, "Deleting when size is 0")
-        freeSize += 1
-        size -= 1
-        if freePointer == 0 {
+        defer {
+            freeSize += 1
+            size -= 1
+        }
+        
+        storage.withUnsafeMutablePointerToElements { pointer in
+            pointer[pos].key = nil
+            pointer[pos].next = 0
+        }
+        
+        if freeSize == 0 {
             freePointer = pos
             return
         }
+        
         storage.withUnsafeMutablePointerToElements { pointer in
-            pointer[Int(pos)].key = nil
-            pointer[Int(pos)].next = freePointer
+            pointer[pos].next = freePointer
         }
+        
         freePointer = pos
     }
 
     @inlinable
     mutating func deleteSubtree(root: NodeIndex) {
         storage.withUnsafeMutablePointerToElements { pointer in
-            if pointer[Int(root)].left != 0 {
-                deleteSubtree(root: pointer[Int(root)].left)
+            if pointer[root].left != 0 {
+                deleteSubtree(root: pointer[root].left)
             }
-            if pointer[Int(root)].right != 0 {
-                deleteSubtree(root: pointer[Int(root)].right)
+            if pointer[root].right != 0 {
+                deleteSubtree(root: pointer[root].right)
             }
         }
         deleteNode(at: root)
@@ -144,72 +255,22 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
     @inlinable
     mutating func storageClear() {
+        storage.withUnsafeMutablePointerToElements { pointer in
+            (pointer + 1).deinitialize(count: usedStorageSpace - 1)
+            return
+        }
         freeSize = 0
         freePointer = 0
-        storage.withUnsafeMutablePointerToElements { pointer in
-            pointer[0] = TreeNode()
-            pointer[0].depth = 0
-        }
         size = 0
-    }
-
-    @usableFromInline
-    internal struct TreeNode {
-        @usableFromInline
-        internal var key: Element?
-
-        @usableFromInline
-        internal var priority: UInt = .fastRandom
-
-        @usableFromInline
-        internal var depth: UInt = 1
-
-        @usableFromInline
-        internal var left: NodeIndex = 0
-
-        @usableFromInline
-        internal var right: NodeIndex = 0
-
-        @usableFromInline
-        internal var next: NodeIndex = 0
-
-        @inlinable
-        internal init(key: T?, left: NodeIndex = 0, right: NodeIndex = 0) {
-            self.key = key
-            self.left = left
-            self.right = right
-        }
-
-        @inlinable
-        internal init() {
-        }
-
-        @inlinable
-        var leftExists: Bool {
-            left != 0
-        }
-
-        @inlinable
-        var rightExists: Bool {
-            right != 0
-        }
-
-        @inlinable
-        internal func leftDepth(storage: Storage) -> UInt {
-            storage.withUnsafeMutablePointerToElements { pointer in
-                return leftExists ? pointer[Int(left)].depth: 0
-            }
-        }
     }
 
     @inlinable
     mutating func updateDepth(node: NodeIndex) {
         if node == 0 { return }
         storage.withUnsafeMutablePointerToElements { storage in
-            let depth = (
-                storage[Int(storage[Int(node)].left)].depth) +
-            (storage[Int(storage[Int(node)].right)].depth) + 1
-            storage[Int(node)].depth = depth
+            let depth = (storage[storage[node].left].depth) +
+                        (storage[storage[node].right].depth) + 1
+            storage[node].depth = depth
         }
     }
 
@@ -219,12 +280,12 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
             return right + left
         }
         return storage.withUnsafeMutablePointerToElements { storage in
-            if storage[Int(left)].priority > storage[Int(right)].priority {
-                storage[Int(left)].right = merge(left: storage[Int(left)].right, right: right)
+            if storage[left].priority > storage[right].priority {
+                storage[left].right = merge(left: storage[left].right, right: right)
                 updateDepth(node: left)
                 return left
             } else {
-                storage[Int(right)].left = merge(left: left, right: storage[Int(right)].left)
+                storage[right].left = merge(left: left, right: storage[right].left)
                 updateDepth(node: right)
                 return right
             }
@@ -232,12 +293,12 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
-    mutating func split(node: NodeIndex, no: UInt) -> (left: NodeIndex, right: NodeIndex) {
+    mutating func split(node: NodeIndex, no: Int) -> (left: NodeIndex, right: NodeIndex) {
         if node == 0 {
             return (0, 0)
         }
         return storage.withUnsafeMutablePointerToElements { pointer in
-            let inode = Int(node)
+            let inode = node
             let curKey = pointer[inode].leftDepth(storage: storage)
             var ret: (left: NodeIndex, right: NodeIndex) = (0, 0)
 
@@ -267,30 +328,29 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
-    func getIndexOf(node: NodeIndex, x: UInt) -> NodeIndex {
+    func getIndexOf(node: NodeIndex, x: Int) -> NodeIndex {
         if node == 0 {
             return 0
         }
         return storage.withUnsafeMutablePointerToElements { pointer in
-            let inode = Int(node)
-            let curKey = pointer[inode].leftDepth(storage: storage)
+            let curKey = pointer[node].leftDepth(storage: storage)
             if curKey < x {
-                return getIndexOf(node: pointer[inode].right, x: x - curKey - 1)
+                return getIndexOf(node: pointer[node].right, x: x - curKey - 1)
             } else if curKey > x {
-                return getIndexOf(node: pointer[inode].left, x: x)
+                return getIndexOf(node: pointer[node].left, x: x)
             }
             return node
         }
     }
 
     @inlinable
-    mutating func setAtIndexKnownUniqelyReferenced(node: NodeIndex, x: UInt, value: Element) {
+    mutating func setAtIndexKnownUniqelyReferenced(node: NodeIndex, x: Int, value: Element) {
         let node = getIndexOf(node: node, x: x)
         if node == 0 {
             fatalError("\(x) not in array")
         }
         storage.withUnsafeMutablePointerToElements { pointer in
-            pointer[Int(node)].key = value
+            pointer[node].key = value
         }
     }
 
@@ -302,14 +362,14 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
         let newNodeInd = allocateNode()
         storage.withUnsafeMutablePointerToElements { pointer in
-            pointer[Int(newNodeInd)].key = newElement
+            pointer[newNodeInd].key = newElement
         }
         if head == 0 {
             head = newNodeInd
             return
         }
 
-        let splitted = split(node: head, no: UInt(i))
+        let splitted = split(node: head, no: i)
         head = merge(left: merge(left: splitted.left, right: newNodeInd), right: splitted.right)
 
     }
@@ -323,7 +383,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     @inlinable
     @discardableResult
     mutating func removeKnownUniqelyReferenced(at i: Int) -> T {
-        let splitRes = split(node: head, no: UInt(i))
+        let splitRes = split(node: head, no: i)
 
         if splitRes.right == 0 {
             fatalError("\(i) not in array")
@@ -331,7 +391,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
         let splittedSecond = split(node: splitRes.right, no: 1)
         return storage.withUnsafeMutablePointerToElements { pointer in
-            let value = pointer[Int(splittedSecond.left)].key!
+            let value = pointer[splittedSecond.left].key!
             head = merge(left: splitRes.left, right: splittedSecond.right)
             deleteNode(at: splittedSecond.left)
             return value
@@ -349,7 +409,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     @inlinable
     var array: [Element] {
         var result = [Element]()
-        result.reserveCapacity(Int(size))
+        result.reserveCapacity(size)
         for i in self {
             result.append(i)
         }
@@ -359,10 +419,10 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     @inlinable
     public subscript(_ x: Int) -> T {
         get {
-            let node = getIndexOf(node: head, x: UInt(x))
+            let node = getIndexOf(node: head, x: x)
             if node != 0 {
                 return storage.withUnsafeMutablePointerToElements { pointer in
-                    pointer[Int(node)].key!
+                    pointer[node].key!
                 }
             }
             fatalError("Index \(x) out of range in structure of size \(size)")
@@ -372,7 +432,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
             if head == 0 || x >= size {
                 fatalError("Index \(x) out of range in structure of size \(size)")
             }
-            setAtIndexKnownUniqelyReferenced(node: head, x: UInt(x), value: value)
+            setAtIndexKnownUniqelyReferenced(node: head, x: x, value: value)
         }
     }
 
@@ -384,18 +444,22 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
-    mutating func constructEmptyHeap(elementsNum: UInt) {
+    mutating func constructEmptyHeap(elementsNum: Int) {
         assert(size == 0 && elementsNum > 0, "Cannot cunstruct empty heap when not empty")
-        requireAdditional(elements: elementsNum + 1)
+        requireExactlyTotal(newCapacity: elementsNum + 1)
+        storage.withUnsafeMutablePointerToElements { rootPointer in
+            (rootPointer + 1).initialize(repeating: TreeNode(), count: elementsNum)
+        }
+        
         storage.withUnsafeMutablePointerToElements { rootPointer in
             func heapify(node: UnsafeMutablePointer<TreeNode>) {
                 var max = node
                 let t = node.pointee
                 if t.leftExists && rootPointer[t.left].priority > max.pointee.priority {
-                    max = rootPointer + Int(t.left)
+                    max = rootPointer + t.left
                 }
                 if t.rightExists && rootPointer[t.right].priority > max.pointee.priority {
-                    max = rootPointer + Int(t.right)
+                    max = rootPointer + t.right
                 }
                 if max != node {
                     swap(&node.pointee.priority, &max.pointee.priority)
@@ -403,31 +467,48 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
                 }
             }
 
-            func build(n: UInt, pointer: UnsafeMutablePointer<TreeNode>) -> UnsafeMutablePointer<TreeNode> {
+            func build(n: Int, pointer: UnsafeMutablePointer<TreeNode>) -> UnsafeMutablePointer<TreeNode> {
                 if n == 0 {
                     return rootPointer
                 }
                 let mid = n / 2
-                pointer[Int(mid)] = TreeNode(
+                pointer[mid] = TreeNode(
                     key: nil,
-                    left: UInt(rootPointer.distance(to: build(n: mid, pointer: pointer))),
-                    right: UInt(rootPointer.distance(to: build(n: n - mid - 1, pointer: pointer + Int(mid) + 1)))
+                    left: rootPointer.distance(to: build(n: mid, pointer: pointer)),
+                    right: rootPointer.distance(to: build(n: n - mid - 1, pointer: pointer + mid + 1))
                 )
-                heapify(node: pointer + Int(mid))
-                updateDepth(node: UInt(rootPointer.distance(to: pointer + Int(mid))))
-                return pointer + Int(mid)
+                heapify(node: pointer + mid)
+                updateDepth(node: rootPointer.distance(to: pointer + mid))
+                return pointer + mid
             }
 
             let built = build(n: elementsNum, pointer: rootPointer + 1)
-            head = UInt(rootPointer.distance(to: built))
+            head = rootPointer.distance(to: built)
             size = elementsNum
         }
     }
-
+    
+    @inlinable
+    mutating func initEmptyStorage() {
+        storage.withUnsafeMutablePointerToElements { pointer in
+            pointer.initialize(to: TreeNode())
+            pointer[0].depth = 0
+        }
+        
+        size = 0
+        freeSize = 0
+        freePointer = 0
+    }
+    
+    @inlinable
+    internal init(initialCapacity: Int) {
+        storage = Self.createNewStorage(capacity: initialCapacity)
+        initEmptyStorage()
+    }
+    
     @inlinable
     public init() {
-        let initialCapacity: UInt = 8
-        storage = Self.createNewStorage(capacity: initialCapacity)
+        self.init(initialCapacity: 8)
     }
 
     @inlinable
@@ -441,11 +522,11 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
     @inlinable
     public init(_ content: UnsafeBufferPointer<Element>) {
-        self.init()
+        self.init(initialCapacity: Swift.max(content.count, 8))
         guard !content.isEmpty else {
             return
         }
-        constructEmptyHeap(elementsNum: UInt(content.count))
+        constructEmptyHeap(elementsNum: content.count)
         storage.withUnsafeMutablePointerToElements { pointer in
             for (i, elem) in content.enumerated() {
                 pointer[i + 1].key = elem
@@ -460,7 +541,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
 
     @inlinable
     public init<S>(_ content: S) where S: Sequence, Element == S.Element {
-        self.init()
+        self.init(initialCapacity: Swift.max(content.underestimatedCount, 8))
         append(contentsOf: content)
     }
 }
