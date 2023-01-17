@@ -19,12 +19,6 @@ extension TreeArray: RangeReplaceableCollection {
 
     @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool) {
-        defer {
-            head = 0
-            size = 0
-            freeSize = 0
-            freePointer = 0
-        }
         if keepCapacity {
             storageClear()
             return

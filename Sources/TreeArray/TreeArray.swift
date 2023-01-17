@@ -256,12 +256,10 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     @inlinable
     mutating func storageClear() {
         storage.withUnsafeMutablePointerToElements { pointer in
-            (pointer + 1).deinitialize(count: usedStorageSpace - 1)
+            pointer.deinitialize(count: usedStorageSpace)
             return
         }
-        freeSize = 0
-        freePointer = 0
-        size = 0
+        initEmptyStorage()
     }
 
     @inlinable
@@ -495,6 +493,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
             pointer[0].depth = 0
         }
         
+        head = 0
         size = 0
         freeSize = 0
         freePointer = 0
