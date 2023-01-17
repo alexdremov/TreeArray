@@ -4,7 +4,7 @@ Swift implementation of implicit treap. Data structure with efficient random ins
 
 ## Usage
 
-TreeArray **behaves like an usual array** but has the different implementation under the hood that allows some operations to work faster. You can just replace `Array` with `TreeArray` and it should work as expected.
+TreeArray **behaves like a usual array** but has a different implementation under the hood that allows some operations to work faster. You can just replace `Array` with `TreeArray` and it should work as expected.
 
 ```swift
 import TreeArray
@@ -16,7 +16,7 @@ print(foo) // [0, 1, 2, 3, 4, 5]
 
 ## Complexity
 
-According to perfomance tests, visible difference starts to appear around 16k elements. After that, `TreeArray` outperform `Array` and `Deque` on random insertions and deletions.
+According to performance tests, the visible difference starts to appear around 16k elements. After that, `TreeArray` outperform `Array` and `Deque` on random insertions and deletions.
 
 | **Operation**                | **Complexity** | **Complexity Array** |
 |------------------------------|----------------|----------------------|
@@ -35,7 +35,7 @@ According to perfomance tests, visible difference starts to appear around 16k el
 
 ## Comparison
 
-The datastructure is built upon self-balancing random search tree. It allows to perform random insertions and deletions efficiently with the cost of worser perfomance on other operations. In directory [Benchmarks/results](Benchmarks/results) you can explore full comparison results. Here, I will note only the most important cases.
+The data structure is built upon a self-balancing random search tree. It allows performing random insertions and deletions efficiently with the cost of worse performance on other operations. In the directory [Benchmarks/results](Benchmarks/results) you can explore full comparison results. Here, I will note only the most important cases.
 
 ### Random insertions
 ![](Benchmarks/results/Results/17%20random%20insertions.svg)
@@ -54,7 +54,7 @@ The datastructure is built upon self-balancing random search tree. It allows to 
 
 <hr>
 
-However, on other tests it works worser. For example, iteration or build.
+However, on other tests, it works worse. For example, iteration or build.
 
 ![](Benchmarks/results/Results/02%20init%20from%20unsafe%20buffer.svg)
 ![](Benchmarks/results/Results/03%20sequential%20iteration.svg)
