@@ -9,9 +9,9 @@ TreeArray behaves like an usual array but has the different implementation under
 ```swift
 import TreeArray
 
-let foo: TreeArray = [1, 2, 3, 4, 5]
-foo.appendFront(0)
-print(foo)
+var foo: TreeArray = [1, 2, 3, 4, 5]
+foo.insert(0, at: 0)
+print(foo) // [0, 1, 2, 3, 4, 5]
 ```
 
 ## Complexity
