@@ -9,6 +9,7 @@ import Foundation
 
 extension TreeArray.TreeNodeBuffer {
     @inlinable
+    @inline(__always)
     var head: TreeArray.NodeIndex {
         get {
             withUnsafeMutablePointerToElements { pointer in
@@ -23,6 +24,7 @@ extension TreeArray.TreeNodeBuffer {
     }
 
     @inlinable
+    @inline(__always)
     var size: Int {
         get {
             withUnsafeMutablePointerToElements { pointer in
@@ -37,6 +39,7 @@ extension TreeArray.TreeNodeBuffer {
     }
 
     @inlinable
+    @inline(__always)
     var freePointer: TreeArray.NodeIndex {
         get {
             withUnsafeMutablePointerToElements { pointer in

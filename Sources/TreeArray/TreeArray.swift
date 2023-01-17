@@ -13,6 +13,7 @@ extension Int {
     static var generator = WyRand(seed: 42)
 
     @inlinable
+    @inline(__always)
     static var fastRandom: Int {
         Int(bitPattern: generator.next())
     }
@@ -31,10 +32,9 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     @usableFromInline
     final class TreeNodeBuffer: ManagedBuffer<Void, TreeNode> {
         @inlinable
+        @inline(__always)
         deinit {
-            withUnsafeMutablePointerToElements { _ in
-                deinitSubtree(head)
-            }
+            deinitSubtree(head)
         }
     }
 
@@ -56,6 +56,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         var right: NodeIndex = 0
 
         @inlinable
+        @inline(__always)
         init(key: T?, left: NodeIndex = 0, right: NodeIndex = 0) {
             self.key = key
             self.left = left
@@ -63,10 +64,12 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         }
 
         @inlinable
+        @inline(__always)
         init() {
         }
 
         @inlinable
+        @inline(__always)
         var next: NodeIndex {
             get {
                 right
@@ -77,16 +80,19 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
         }
 
         @inlinable
+        @inline(__always)
         var leftExists: Bool {
             left != 0
         }
 
         @inlinable
+        @inline(__always)
         var rightExists: Bool {
             right != 0
         }
 
         @inlinable
+        @inline(__always)
         func leftDepth(storage: Storage) -> Int {
             storage.withUnsafeMutablePointerToElements { pointer in
                 return leftExists ? Int(pointer[left].depth) : 0
@@ -98,6 +104,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     var storage: Storage
 
     @inlinable
+    @inline(__always)
     var head: NodeIndex {
         get {
             storage.head
@@ -108,11 +115,13 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
+    @inline(__always)
     var capacity: Int {
         storage.capacity
     }
 
     @inlinable
+    @inline(__always)
     var size: Int {
         get {
             storage.size
@@ -126,6 +135,7 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     var freeSize: Int = 0
 
     @usableFromInline
+    @inline(__always)
     var freePointer: NodeIndex {
         get {
             storage.freePointer
@@ -362,12 +372,14 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
+    @inline(__always)
     init(initialCapacity: Int) {
         storage = Self.createNewStorage(capacity: initialCapacity)
         initEmptyStorage()
     }
 
     @inlinable
+    @inline(__always)
     public init() {
         self.init(initialCapacity: 8)
     }
@@ -410,17 +422,20 @@ public struct TreeArray<T>: ExpressibleByArrayLiteral, RandomAccessCollection {
     }
 
     @inlinable
+    @inline(__always)
     public init(arrayLiteral content: Element...) {
         self.init(content)
     }
 
     @inlinable
+    @inline(__always)
     public init<S>(_ content: S) where S: Sequence, Element == S.Element {
         self.init(initialCapacity: Swift.max(content.underestimatedCount, 8))
         append(contentsOf: content)
     }
     
     @inlinable
+    @inline(__always)
     public init<S>(_ content: S) where S: Collection, Element == S.Element {
         self.init(initialCapacity: Swift.max(content.underestimatedCount, 8))
         append(contentsOf: content)

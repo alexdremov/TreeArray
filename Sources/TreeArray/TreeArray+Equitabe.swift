@@ -36,6 +36,8 @@ extension TreeArray: Equatable where Element: Equatable {
         return true
     }
     
+    @inlinable
+    @inline(__always)
     public static func == (lhs: [Element], rhs: TreeArray) -> Bool {
         rhs == lhs
     }

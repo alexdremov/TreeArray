@@ -8,6 +8,7 @@
 import Foundation
 
 extension TreeArray: Hashable where Element: Hashable {
+    @inlinable
     public func hash(into hasher: inout Hasher) {
         for (i, elem) in self.enumerated() {
             hasher.combine((i + 1) ^ elem.hashValue)

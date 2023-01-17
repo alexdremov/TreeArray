@@ -10,6 +10,7 @@ import Foundation
 extension TreeArray {
     
     @inlinable
+    @inline(__always)
     mutating func ensureUniqelyReferenced() {
         if !isKnownUniquelyReferenced(&storage) {
             storage = storageCopy
@@ -17,6 +18,7 @@ extension TreeArray {
     }
     
     @inlinable
+    @inline(__always)
     var usedStorageSpace: Int {
         freeSize + size + 1 // + 1 on behalf of zero node
     }
@@ -25,6 +27,7 @@ extension TreeArray {
      - returns: uninitialized buffer
      */
     @inlinable
+    @inline(__always)
     static func createNewStorage(capacity: Int) -> Storage {
         Storage.create(
             minimumCapacity: Swift.max(capacity, 1),
@@ -146,6 +149,8 @@ extension TreeArray {
 }
 
 extension ManagedBuffer: Equatable where Header == Void {
+    @inlinable
+    @inline(__always)
     public static func == (lhs: ManagedBuffer<Header, Element>, rhs: ManagedBuffer<Header, Element>) -> Bool {
         lhs.withUnsafeMutablePointerToElements { lhsp in
             rhs.withUnsafeMutablePointerToElements { rhsp in

@@ -17,11 +17,13 @@ extension TreeArray: Collection, Sequence {
         var visitStack: ContiguousArray<NodeIndex> = []
 
         @inlinable
+        @inline(__always)
         var currentNode: NodeIndex? {
             visitStack.last
         }
 
         @inlinable
+        @inline(__always)
         init(tree: TreeArray) {
             self.init(tree: tree, start: tree.head)
             propagateLeft()
@@ -79,36 +81,43 @@ extension TreeArray: Collection, Sequence {
     }
 
     @inlinable
+    @inline(__always)
     public func makeIterator() -> Iterator {
         .init(tree: self)
     }
 
     @inlinable
+    @inline(__always)
     func makeIterator(starting node: NodeIndex) -> Iterator {
         .init(tree: self, start: node)
     }
 
     @inlinable
+    @inline(__always)
     public var startIndex: Int {
         0
     }
 
     @inlinable
+    @inline(__always)
     public var endIndex: Int {
         Int(size)
     }
 
     @inlinable
+    @inline(__always)
     public var isEmpty: Bool {
         size == 0
     }
 
     @inlinable
+    @inline(__always)
     public func index(after i: Int) -> Int {
         i + 1
     }
 
     @inlinable
+    @inline(__always)
     public func index(before i: Int) -> Int {
         i - 1
     }
@@ -138,16 +147,19 @@ extension TreeArray: Collection, Sequence {
     }
     
     @inlinable
+    @inline(__always)
     mutating public func insert(contentsOf newElements: Array<T>, at i: Int){
         insert(contentsOf: TreeArray(newElements), at: i)
     }
     
     @inlinable
+    @inline(__always)
     mutating public func insert(contentsOf newElements: UnsafeBufferPointer<T>, at i: Int){
         insert(contentsOf: TreeArray(newElements), at: i)
     }
     
     @inlinable
+    @inline(__always)
     mutating public func append(contentsOf constructedTree: TreeArray) {
         insert(contentsOf: constructedTree, at: size)
     }
@@ -174,11 +186,13 @@ extension TreeArray: Collection, Sequence {
     }
 
     @inlinable
+    @inline(__always)
     mutating public func append(_ value: Element) {
         insert(value, at: Int(size))
     }
 
     @inlinable
+    @inline(__always)
     mutating public func appendFront(_ value: Element) {
         insert(value, at: 0)
     }
