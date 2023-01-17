@@ -31,7 +31,7 @@ According to perfomance tests, visible difference starts to appear around 16k el
 | reverse                      | `O(n)`         | `O(n)`               |
 | contains                     | `O(n)`         | `O(n)`               |
 | append array                 | `O(m + log n)` | `O(m)`               |
-| insert array                 | `O(m + log n)` | `O(mn)`              |
+| insert array                 | `O(m + log n)` | `O(m + n)`           |
 
 ## Comparison
 
