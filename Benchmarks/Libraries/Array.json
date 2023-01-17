@@ -13,7 +13,8 @@
     }, {
         "kind": "chart",
         "title": "sequential iteration",
-        "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration",
+        "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration (iterator)",
+            "TreeArray<Int> sequential iteration (indices)",
         "Deque<Int> sequential iteration (contiguous, iterator)",
         "Deque<Int> sequential iteration (discontiguous, iterator)",
         "Deque<Int> sequential iteration (contiguous, indices)",

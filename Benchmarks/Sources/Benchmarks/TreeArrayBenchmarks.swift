@@ -20,13 +20,22 @@ extension Benchmark {
     }
 
     self.addSimple(
-      title: "TreeArray<Int> sequential iteration",
+      title: "TreeArray<Int> sequential iteration (iterator)",
       input: TreeArray<Int>.self
     ) { input in
       for i in input {
         blackHole(i)
       }
     }
+      
+      self.addSimple(
+        title: "TreeArray<Int> sequential iteration (indices)",
+        input: TreeArray<Int>.self
+      ) { input in
+          for i in 0..<input.count {
+              blackHole(input[i])
+          }
+      }
 
     self.addSimple(
       title: "TreeArray<Int> subscript get, random offsets",
