@@ -2,5 +2,89 @@
     "kind": "group",
     "title": "All results",
     "directory": "Results",
-    "contents": [{"kind": "chart", "title": "init from range", "tasks": ["Array<Int> init from range", "TreeArray<Int> init from range"]}, {"kind": "chart", "title": "init from unsafe buffer", "tasks": ["Array<Int> init from unsafe buffer", "TreeArray<Int> init from unsafe buffer"]}, {"kind": "chart", "title": "sequential iteration", "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration"]}, {"kind": "chart", "title": "subscript get, random offsets", "tasks": ["Array<Int> subscript get, random offsets", "TreeArray<Int> subscript get, random offsets"]}, {"kind": "chart", "title": "successful contains", "tasks": ["Array<Int> successful contains", "TreeArray<Int> successful contains"]}, {"kind": "chart", "title": "unsuccessful contains", "tasks": ["Array<Int> unsuccessful contains", "TreeArray<Int> unsuccessful contains"]}, {"kind": "chart", "title": "mutate through subscript", "tasks": ["Array<Int> mutate through subscript", "TreeArray<Int> mutate through subscript"]}, {"kind": "chart", "title": "random swaps", "tasks": ["Array<Int> random swaps", "TreeArray<Int> random swaps"]}, {"kind": "chart", "title": "partitioning around middle", "tasks": ["Array<Int> partitioning around middle", "TreeArray<Int> partitioning around middle"]}, {"kind": "chart", "title": "sort", "tasks": ["Array<Int> sort", "TreeArray<Int> sort"]}, {"kind": "chart", "title": "append", "tasks": ["Array<Int> append", "TreeArray<Int> append"]}, {"kind": "chart", "title": "append, reserving capacity", "tasks": ["Array<Int> append, reserving capacity", "TreeArray<Int> append, reserving capacity"]}, {"kind": "chart", "title": "prepend", "tasks": ["Array<Int> prepend", "TreeArray<Int> prepend"]}, {"kind": "chart", "title": "prepend, reserving capacity", "tasks": ["Array<Int> prepend, reserving capacity", "TreeArray<Int> prepend, reserving capacity"]}, {"kind": "chart", "title": "kalimba", "tasks": ["Array<Int> kalimba", "TreeArray<Int> kalimba"]}, {"kind": "chart", "title": "kalimba fast", "tasks": ["Array<Int> kalimba fast", "TreeArray<Int> kalimba fast"]}, {"kind": "chart", "title": "random insertions", "tasks": ["Array<Int> random insertions", "TreeArray<Int> random insertions"]}, {"kind": "chart", "title": "random insertions, reserving capacity", "tasks": ["Array<Int> random insertions, reserving capacity", "TreeArray<Int> random insertions, reserving capacity"]}, {"kind": "chart", "title": "removeLast", "tasks": ["Array<Int> removeLast", "TreeArray<Int> removeLast"]}, {"kind": "chart", "title": "removeFirst", "tasks": ["Array<Int> removeFirst", "TreeArray<Int> removeFirst"]}, {"kind": "chart", "title": "random removals", "tasks": ["Array<Int> random removals", "TreeArray<Int> random removals"]}]
+    "contents": [{
+        "kind": "chart",
+        "title": "init from range",
+        "tasks": ["Array<Int> init from range", "TreeArray<Int> init from range", "Deque<Int> init from range"]
+    }, {
+        "kind": "chart",
+        "title": "init from unsafe buffer",
+        "tasks": ["Array<Int> init from unsafe buffer", "TreeArray<Int> init from unsafe buffer", "Deque<Int> init from unsafe buffer"]
+    }, {
+        "kind": "chart",
+        "title": "sequential iteration",
+        "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration"]
+    }, {
+        "kind": "chart",
+        "title": "subscript get, random offsets",
+        "tasks": ["Array<Int> subscript get, random offsets", "TreeArray<Int> subscript get, random offsets"]
+    }, {
+        "kind": "chart",
+        "title": "successful contains",
+        "tasks": ["Array<Int> successful contains", "TreeArray<Int> successful contains"]
+    }, {
+        "kind": "chart",
+        "title": "unsuccessful contains",
+        "tasks": ["Array<Int> unsuccessful contains", "TreeArray<Int> unsuccessful contains"]
+    }, {
+        "kind": "chart",
+        "title": "mutate through subscript",
+        "tasks": ["Array<Int> mutate through subscript", "TreeArray<Int> mutate through subscript"]
+    }, {
+        "kind": "chart",
+        "title": "random swaps",
+        "tasks": ["Array<Int> random swaps", "TreeArray<Int> random swaps"]
+    }, {
+        "kind": "chart",
+        "title": "partitioning around middle",
+        "tasks": ["Array<Int> partitioning around middle", "TreeArray<Int> partitioning around middle"]
+    }, {
+        "kind": "chart",
+        "title": "sort",
+        "tasks": ["Array<Int> sort", "TreeArray<Int> sort"]
+    }, {
+        "kind": "chart",
+        "title": "append",
+        "tasks": ["Array<Int> append", "TreeArray<Int> append"]
+    }, {
+        "kind": "chart",
+        "title": "append, reserving capacity",
+        "tasks": ["Array<Int> append, reserving capacity", "TreeArray<Int> append, reserving capacity"]
+    }, {
+        "kind": "chart",
+        "title": "prepend",
+        "tasks": ["Array<Int> prepend", "TreeArray<Int> prepend"]
+    }, {
+        "kind": "chart",
+        "title": "prepend, reserving capacity",
+        "tasks": ["Array<Int> prepend, reserving capacity", "TreeArray<Int> prepend, reserving capacity"]
+    }, {
+        "kind": "chart",
+        "title": "kalimba",
+        "tasks": ["Array<Int> kalimba", "TreeArray<Int> kalimba"]
+    }, {
+        "kind": "chart",
+        "title": "kalimba fast",
+        "tasks": ["Array<Int> kalimba fast", "TreeArray<Int> kalimba fast"]
+    }, {
+        "kind": "chart",
+        "title": "random insertions",
+        "tasks": ["Array<Int> random insertions", "TreeArray<Int> random insertions"]
+    }, {
+        "kind": "chart",
+        "title": "random insertions, reserving capacity",
+        "tasks": ["Array<Int> random insertions, reserving capacity", "TreeArray<Int> random insertions, reserving capacity"]
+    }, {
+        "kind": "chart",
+        "title": "removeLast",
+        "tasks": ["Array<Int> removeLast", "TreeArray<Int> removeLast"]
+    }, {
+        "kind": "chart",
+        "title": "removeFirst",
+        "tasks": ["Array<Int> removeFirst", "TreeArray<Int> removeFirst"]
+    }, {
+        "kind": "chart",
+        "title": "random removals",
+        "tasks": ["Array<Int> random removals", "TreeArray<Int> random removals"]
+    }]
 }
