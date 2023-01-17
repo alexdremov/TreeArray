@@ -13,55 +13,60 @@
     }, {
         "kind": "chart",
         "title": "sequential iteration",
-        "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration"]
+        "tasks": ["Array<Int> sequential iteration", "TreeArray<Int> sequential iteration",
+        "Deque<Int> sequential iteration (contiguous, iterator)",
+        "Deque<Int> sequential iteration (discontiguous, iterator)",
+        "Deque<Int> sequential iteration (contiguous, indices)",
+        "Deque<Int> sequential iteration (discontiguous, indices)"]
     }, {
         "kind": "chart",
         "title": "subscript get, random offsets",
-        "tasks": ["Array<Int> subscript get, random offsets", "TreeArray<Int> subscript get, random offsets"]
+        "tasks": ["Array<Int> subscript get, random offsets", "TreeArray<Int> subscript get, random offsets",
+        "Deque<Int> subscript get, random offsets (contiguous)", "Deque<Int> subscript get, random offsets (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "successful contains",
-        "tasks": ["Array<Int> successful contains", "TreeArray<Int> successful contains"]
+        "tasks": ["Array<Int> successful contains", "TreeArray<Int> successful contains", "Deque<Int> successful contains (contiguous)", "Deque<Int> successful contains (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "unsuccessful contains",
-        "tasks": ["Array<Int> unsuccessful contains", "TreeArray<Int> unsuccessful contains"]
+        "tasks": ["Array<Int> unsuccessful contains", "TreeArray<Int> unsuccessful contains", "Deque<Int> unsuccessful contains (contiguous)", "Deque<Int> unsuccessful contains (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "mutate through subscript",
-        "tasks": ["Array<Int> mutate through subscript", "TreeArray<Int> mutate through subscript"]
+        "tasks": ["Array<Int> mutate through subscript", "TreeArray<Int> mutate through subscript", "Deque<Int> mutate through subscript (contiguous)", "Deque<Int> mutate through subscript (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "random swaps",
-        "tasks": ["Array<Int> random swaps", "TreeArray<Int> random swaps"]
+        "tasks": ["Array<Int> random swaps", "TreeArray<Int> random swaps", "Deque<Int> random swaps (contiguous)", "Deque<Int> random swaps (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "partitioning around middle",
-        "tasks": ["Array<Int> partitioning around middle", "TreeArray<Int> partitioning around middle"]
+        "tasks": ["Array<Int> partitioning around middle", "TreeArray<Int> partitioning around middle", "Deque<Int> partitioning around middle (contiguous)", "Deque<Int> partitioning around middle (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "sort",
-        "tasks": ["Array<Int> sort", "TreeArray<Int> sort"]
+        "tasks": ["Array<Int> sort", "TreeArray<Int> sort", "Deque<Int> sort (contiguous)", "Deque<Int> sort (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "append",
-        "tasks": ["Array<Int> append", "TreeArray<Int> append"]
+        "tasks": ["Array<Int> append", "TreeArray<Int> append", "Deque<Int> append"]
     }, {
         "kind": "chart",
         "title": "append, reserving capacity",
-        "tasks": ["Array<Int> append, reserving capacity", "TreeArray<Int> append, reserving capacity"]
+        "tasks": ["Array<Int> append, reserving capacity", "TreeArray<Int> append, reserving capacity", "Deque<Int> append, reserving capacity"]
     }, {
         "kind": "chart",
         "title": "prepend",
-        "tasks": ["Array<Int> prepend", "TreeArray<Int> prepend"]
+        "tasks": ["Array<Int> prepend", "TreeArray<Int> prepend", "Deque<Int> prepend"]
     }, {
         "kind": "chart",
         "title": "prepend, reserving capacity",
-        "tasks": ["Array<Int> prepend, reserving capacity", "TreeArray<Int> prepend, reserving capacity"]
+        "tasks": ["Array<Int> prepend, reserving capacity", "TreeArray<Int> prepend, reserving capacity", "Deque<Int> prepend, reserving capacity"]
     }, {
         "kind": "chart",
         "title": "kalimba",
-        "tasks": ["Array<Int> kalimba", "TreeArray<Int> kalimba"]
+        "tasks": ["Array<Int> kalimba", "TreeArray<Int> kalimba", "Deque<Int> kalimba"]
     }, {
         "kind": "chart",
         "title": "kalimba fast",
@@ -69,22 +74,22 @@
     }, {
         "kind": "chart",
         "title": "random insertions",
-        "tasks": ["Array<Int> random insertions", "TreeArray<Int> random insertions"]
+        "tasks": ["Array<Int> random insertions", "TreeArray<Int> random insertions", "Deque<Int> random insertions"]
     }, {
         "kind": "chart",
         "title": "random insertions, reserving capacity",
-        "tasks": ["Array<Int> random insertions, reserving capacity", "TreeArray<Int> random insertions, reserving capacity"]
+        "tasks": ["Array<Int> random insertions, reserving capacity", "TreeArray<Int> random insertions, reserving capacity", "Deque<Int> random insertions, reserving capacity"]
     }, {
         "kind": "chart",
         "title": "removeLast",
-        "tasks": ["Array<Int> removeLast", "TreeArray<Int> removeLast"]
+        "tasks": ["Array<Int> removeLast", "TreeArray<Int> removeLast", "Deque<Int> removeLast (contiguous)", "Deque<Int> removeLast (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "removeFirst",
-        "tasks": ["Array<Int> removeFirst", "TreeArray<Int> removeFirst"]
+        "tasks": ["Array<Int> removeFirst", "TreeArray<Int> removeFirst", "Deque<Int> removeFirst (contiguous)", "Deque<Int> removeFirst (discontiguous)"]
     }, {
         "kind": "chart",
         "title": "random removals",
-        "tasks": ["Array<Int> random removals", "TreeArray<Int> random removals"]
+        "tasks": ["Array<Int> random removals", "TreeArray<Int> random removals", "Deque<Int> random removals (contiguous)", "Deque<Int> random removals (discontiguous)"]
     }]
 }
